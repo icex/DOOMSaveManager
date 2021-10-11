@@ -12,6 +12,7 @@ namespace DOOMSaveManager
     {
         BethesdaNet,
         Steam,
+        Empress,
     }
 
     public class DoomEternalSavePath
@@ -36,6 +37,9 @@ namespace DOOMSaveManager
                 FullPath = Path.Combine(BnetSavePath, Identifier);
             else if (platform == DoomEternalSavePlatform.Steam)
                 FullPath = Path.Combine(SteamSavePath, Utilities.Id64ToId3(Identifier), DoomEternal.SteamGameID.ToString(), "remote");
+            else if (platform == DoomEternalSavePlatform.Empress) {
+                FullPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\\Roaming\\EMPRESS\\782330\\remote\\782330\\remote");
+            }
         }
 
         public string[] GetAbsolutePaths() => Directory.GetFiles(FullPath, "*.*", SearchOption.AllDirectories);
@@ -56,7 +60,7 @@ namespace DOOMSaveManager
                     string relPath = single.Replace(FullPath, "").Substring(1);
                     if (Platform == DoomEternalSavePlatform.BethesdaNet && Encrypted)
                         fileData = Crypto.DecryptAndVerify($"{Identifier}PAINELEMENTAL{Path.GetFileName(single)}", fileData);
-                    else if (Platform == DoomEternalSavePlatform.Steam && Encrypted)
+                    else if ((Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress) && Encrypted)
                         fileData = Crypto.DecryptAndVerify($"{Identifier}MANCUBUS{Path.GetFileName(single)}", fileData);
 
                     var fi = new FileInfo(single);
@@ -98,7 +102,7 @@ namespace DOOMSaveManager
                         byte[] fileData = dataOut.ToArray();
                         if (Platform == DoomEternalSavePlatform.BethesdaNet && Encrypted)
                             fileData = Crypto.EncryptAndDigest($"{Identifier}PAINELEMENTAL{Path.GetFileName(entryFileName)}", fileData);
-                        else if (Platform == DoomEternalSavePlatform.Steam && Encrypted)
+                        else if ((Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress) && Encrypted)
                             fileData = Crypto.EncryptAndDigest($"{Identifier}MANCUBUS{Path.GetFileName(entryFileName)}", fileData);
 
                         File.WriteAllBytes(fullZipToPath, fileData);
@@ -115,7 +119,7 @@ namespace DOOMSaveManager
             string srcAAD;
             if(Platform == DoomEternalSavePlatform.BethesdaNet)
                 srcAAD = "PAINELEMENTAL";
-            else if (Platform == DoomEternalSavePlatform.Steam)
+            else if (Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress)
                 srcAAD = "MANCUBUS";
             else
                 throw new Exception("Unsupported source platform specified!");
@@ -130,7 +134,7 @@ namespace DOOMSaveManager
             string dstAAD;
             if (dst.Platform == DoomEternalSavePlatform.BethesdaNet)
                 dstAAD = "PAINELEMENTAL";
-            else if (dst.Platform == DoomEternalSavePlatform.Steam)
+            else if (dst.Platform == DoomEternalSavePlatform.Steam || dst.Platform == DoomEternalSavePlatform.Empress)
                 dstAAD = "MANCUBUS";
             else
                 throw new Exception("Unsupported destination platform specified!");
