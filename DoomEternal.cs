@@ -14,6 +14,7 @@ namespace DOOMSaveManager
         public const string GameName = "Doom Eternal";
 
         public const int SteamGameID = 782330;
+        public static string empressID = "";
         public static string SteamSavePath = "";
         public static string EmpressSavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\\Roaming\\EMPRESS\\782330\\remote\\782330\\remote");
         public static string BnetSavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "id Software", "DOOMEternal", "base", "savegame");
@@ -47,7 +48,8 @@ namespace DOOMSaveManager
 
             if (Directory.Exists(EmpressSavePath))
             {
-                Saves.Add(new DoomEternalSavePath("76561199979096720", DoomEternalSavePlatform.Empress));
+                empressID = File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\\Roaming\\EMPRESS\\782330\\remote\\settings\\user_steam_id.txt"));
+                Saves.Add(new DoomEternalSavePath(empressID, DoomEternalSavePlatform.Empress));
             }
         }
 	}
