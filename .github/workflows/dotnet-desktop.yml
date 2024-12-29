@@ -1,0 +1,40 @@
+name: DOOMSaveManager Release
+
+on:
+  push:
+    tags:
+      - "*.*.*.*"
+
+jobs:
+  create_release:
+    name: Create GitHub Release
+    runs-on: windows-2022
+    steps:
+      - name: Install 7Zip PowerShell Module
+        shell: powershell
+        run: Install-Module 7Zip4PowerShell -Force -Verbose
+
+      - uses: actions/checkout@master
+
+      - uses: nuget/setup-nuget@v1
+
+      - run: nuget restore DOOMSaveManager.sln
+      
+      - name: Build Binary
+        shell: cmd
+        run: call .\BuildBinary.cmd
+
+      - name: Build Artifact
+        shell: cmd
+        run: call .\BuildArtifact.cmd
+
+      - name: Create Release
+        id: upload-release-asset-any-cpu
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./DOOMSaveManager.zip
+          name: DOOMSaveManager ${{ github.ref }}
+          body: |
+            Automated Release by GitHub Action CI
