@@ -9,3 +9,5 @@ A program to make importing and exporting DOOM saves easier.
 ### Libraries Used:
 [SharpZipLib](https://github.com/icsharpcode/SharpZipLib)
 [BouncyCastle](http://www.bouncycastle.org/csharp/)
+
+To import to Rune -> set AccountId=6112203 in steam_emu.ini

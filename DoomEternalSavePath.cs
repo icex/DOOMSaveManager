@@ -13,6 +13,7 @@ namespace DOOMSaveManager
         BethesdaNet,
         Steam,
         Empress,
+        Rune,
     }
 
     public class DoomEternalSavePath
@@ -30,15 +31,22 @@ namespace DOOMSaveManager
             Platform = platform;
             Encrypted = encrypted;
 
-            if (Identifier == "savegame.unencrypted") {
+            if (Identifier == "savegame.unencrypted")
+            {
                 Encrypted = false;
                 FullPath = Path.Combine(BnetSavePath + ".unencrypted", Environment.UserName);
-            } else if (platform == DoomEternalSavePlatform.BethesdaNet)
+            }
+            else if (platform == DoomEternalSavePlatform.BethesdaNet)
                 FullPath = Path.Combine(BnetSavePath, Identifier);
             else if (platform == DoomEternalSavePlatform.Steam)
                 FullPath = Path.Combine(SteamSavePath, Utilities.Id64ToId3(Identifier), DoomEternal.SteamGameID.ToString(), "remote");
-            else if (platform == DoomEternalSavePlatform.Empress) {
+            else if (platform == DoomEternalSavePlatform.Empress)
+            {
                 FullPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\\Roaming\\EMPRESS\\782330\\remote\\782330\\remote");
+            }
+            else if (platform == DoomEternalSavePlatform.Rune)
+            {
+                FullPath = Path.Combine("C:\\Users\\Public", "Documents\\Steam\\RUNE\\782330\\remote");
             }
         }
 
@@ -60,7 +68,7 @@ namespace DOOMSaveManager
                     string relPath = single.Replace(FullPath, "").Substring(1);
                     if (Platform == DoomEternalSavePlatform.BethesdaNet && Encrypted)
                         fileData = Crypto.DecryptAndVerify($"{Identifier}PAINELEMENTAL{Path.GetFileName(single)}", fileData);
-                    else if ((Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress) && Encrypted)
+                    else if ((Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress || Platform == DoomEternalSavePlatform.Rune) && Encrypted)
                         fileData = Crypto.DecryptAndVerify($"{Identifier}MANCUBUS{Path.GetFileName(single)}", fileData);
 
                     var fi = new FileInfo(single);
@@ -102,7 +110,7 @@ namespace DOOMSaveManager
                         byte[] fileData = dataOut.ToArray();
                         if (Platform == DoomEternalSavePlatform.BethesdaNet && Encrypted)
                             fileData = Crypto.EncryptAndDigest($"{Identifier}PAINELEMENTAL{Path.GetFileName(entryFileName)}", fileData);
-                        else if ((Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress) && Encrypted)
+                        else if ((Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress || Platform == DoomEternalSavePlatform.Rune) && Encrypted)
                             fileData = Crypto.EncryptAndDigest($"{Identifier}MANCUBUS{Path.GetFileName(entryFileName)}", fileData);
 
                         File.WriteAllBytes(fullZipToPath, fileData);
@@ -119,7 +127,7 @@ namespace DOOMSaveManager
             string srcAAD;
             if(Platform == DoomEternalSavePlatform.BethesdaNet)
                 srcAAD = "PAINELEMENTAL";
-            else if (Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress)
+            else if (Platform == DoomEternalSavePlatform.Steam || Platform == DoomEternalSavePlatform.Empress || Platform == DoomEternalSavePlatform.Rune)
                 srcAAD = "MANCUBUS";
             else
                 throw new Exception("Unsupported source platform specified!");
@@ -134,7 +142,7 @@ namespace DOOMSaveManager
             string dstAAD;
             if (dst.Platform == DoomEternalSavePlatform.BethesdaNet)
                 dstAAD = "PAINELEMENTAL";
-            else if (dst.Platform == DoomEternalSavePlatform.Steam || dst.Platform == DoomEternalSavePlatform.Empress)
+            else if (dst.Platform == DoomEternalSavePlatform.Steam || dst.Platform == DoomEternalSavePlatform.Empress || dst.Platform == DoomEternalSavePlatform.Rune)
                 dstAAD = "MANCUBUS";
             else
                 throw new Exception("Unsupported destination platform specified!");

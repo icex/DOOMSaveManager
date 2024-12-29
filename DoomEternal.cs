@@ -15,8 +15,10 @@ namespace DOOMSaveManager
 
         public const int SteamGameID = 782330;
         public static string empressID = "";
+        public static string RuneID = "6112203"; // replace with your rune AccountId after you first started the game. From the steam_emu.ini file
         public static string SteamSavePath = "";
         public static string EmpressSavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\\Roaming\\EMPRESS\\782330\\remote\\782330\\remote");
+        public static string RuneSavePath = "C:\\Users\\Public\\Documents\\Steam\\RUNE\\782330\\remote"; // hardcoded. dont judge, I don't code in Win
         public static string BnetSavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "id Software", "DOOMEternal", "base", "savegame");
 
         public static DoomEternalSavePathCollection Saves;
@@ -50,6 +52,11 @@ namespace DOOMSaveManager
             {
                 empressID = File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\\Roaming\\EMPRESS\\782330\\remote\\settings\\user_steam_id.txt"));
                 Saves.Add(new DoomEternalSavePath(empressID, DoomEternalSavePlatform.Empress));
+            } 
+            
+            if (Directory.Exists(RuneSavePath))
+            {
+                Saves.Add(new DoomEternalSavePath(Utilities.Id3ToId64(RuneID), DoomEternalSavePlatform.Rune));
             }
         }
 	}
